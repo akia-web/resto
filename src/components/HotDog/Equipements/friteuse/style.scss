@@ -1,0 +1,41 @@
+.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-21,.cls-8,.cls-9,.cls-10,.cls-11,.cls-12,.cls-22,.cls-13,.cls-14,.cls-15,.cls-16,.cls-17,.cls-18,.cls-19,.cls-20{stroke:#1d1d1b;}
+.cls-1,.cls-22{fill:#474645;}
+.cls-2{fill:#9bd3e2;}
+.cls-3{fill:#a05574;}
+.cls-4{fill:#d1792c;}
+.cls-5{fill:#f4dc31;}
+.cls-6{fill:#f9bb3c;}
+.cls-7{fill:#33302c;stroke:#090a0a;}
+.cls-21{fill:#ada299;}
+.cls-21,
+.cls-22{stroke-linecap:square;stroke-linejoin:round;}
+.cls-8{fill:#0b0b0b;}
+.cls-9{fill:#72706f;}
+.cls-10{fill:#fff;}
+.cls-11{fill:#966e3a;}
+.cls-12{fill:#c78a5c;}
+.cls-13{fill:#000;}
+.cls-14{fill:#efcbd9;}
+.cls-15{fill:#894a14;}
+.cls-16{fill:#bfbdbb;}
+.cls-17{fill:#eb8020;}
+.cls-18{fill:#9c551f;}
+.cls-19{fill:#e8c895;}
+.cls-20{fill:#8a6733;}
+
+.no-visible{
+    visibility: hidden;
+}
+
+svg{
+    width: 100%;
+    max-height: calc(27vh + 10vh);
+    transform: translateY(-10vh);
+}
+
+#machine-friteuse:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
+}

@@ -1,0 +1,40 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@import 'styles/height.scss';
+@import 'styles/margin.scss';
+@import 'styles/padding.scss';
+@import 'styles/text.scss';
+@import 'styles/flex.scss';
+
+
+.width-50px{
+    width: 50px;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+
+.active-food{
+    animation: sautiller 0.4s infinite alternate;
+    .contour{
+        stroke: #21b956;
+        stroke-width: 8px;
+     
+    }
+
+}
+
+@keyframes sautiller {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-5px);
+    }
+}

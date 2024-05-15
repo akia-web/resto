@@ -1,0 +1,21 @@
+.contour{fill:none;}
+.cls-2{fill:#5e1211;}
+.cls-4{fill:#d43333;stroke:#060606;}
+.cls-4,
+.cls-5,
+.cls-6{stroke-miterlimit:10;}
+.cls-3,.cls-5{fill:#e8e34c;}
+.cls-5{stroke:#470f10;stroke-width:.5px;}
+.cls-6{fill:#e5914b;stroke:#683a33;}
+
+#frites{
+    width: 80px;
+    margin-top: -33px;
+}
+
+#frites:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
+}

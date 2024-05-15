@@ -1,0 +1,50 @@
+#coca{
+    width: 50px;
+    height: 85px ;
+}
+
+.cls-1,.cls-5{
+    fill:#b64492;stroke:#671b53;
+}
+
+.cls-2{
+    fill:#e4ebef;
+}
+
+.cls-2,.cls-3,.cls-6{
+    stroke:#000;
+}
+.cls-7{
+    fill:#702415;
+}
+.cls-11{
+    isolation:isolate;
+}
+.cls-3{
+    fill:#a5a0a4;
+}
+.contour{
+    fill:none;
+}
+.cls-9{
+    fill:#873c25;
+}
+.cls-4{
+    fill:#e51f2c;stroke:#b27a36;
+}
+.cls-5{
+    mix-blend-mode:multiply;
+}
+.cls-10{
+    fill:#fdfdfd;
+}
+.cls-6{
+    fill:#ddd9dc;
+}
+
+#coca:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
+}

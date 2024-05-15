@@ -1,0 +1,59 @@
+.header-level{
+    height: 10vh;
+    background-color: greenyellow;
+}
+
+.orders{
+    height: 13vh;
+    background-color: red;
+    display: flex;
+    gap: 5px
+}
+
+.order{
+    border: 1px solid black;
+    height: 13vh;
+    width: 25%;
+}
+
+.kitchen{
+    height: calc( 70vh - 1em);
+    background-color: blue;
+}
+
+.top-kitchen{
+    height: 27vh;
+    background-color: beige;
+}
+
+.bord-kitchen{
+    height: 2vh;
+    background-color: brown;
+}
+
+.plan-kitchen{
+    height: 27vh;
+    background-color: #e3bba0;
+}
+
+.bottom-kitchen{
+    background-color: #8b6247;
+    height: calc(70vh - 1em  - 49vh);
+}
+
+.container-trash{
+    height: calc(100% - 1em);
+    margin-top: 1em;
+    background-color: #492d1b;
+    width: 15%;
+    margin-left: 20px;
+}
+
+.container-ice-cream{
+    height: calc(100% - 1em);
+    margin-top: 1em;
+    margin-left: 40px;
+    width: calc(100% - 40px - 15%);
+    background-color: #492d1b;
+}
+

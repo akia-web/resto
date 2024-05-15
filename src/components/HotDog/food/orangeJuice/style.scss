@@ -1,0 +1,58 @@
+#orangeJuice{
+    width: 50px;
+    height: 85px ;
+}
+
+
+.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6{
+    stroke-miterlimit:10;
+    stroke-width:.25px;
+}
+.cls-1,.cls-4{
+    fill:#b64492;stroke:#671b53;
+}
+.cls-7{
+    fill:#f6db68;
+}
+
+.cls-2{
+    fill:#e4ebef;
+}
+.cls-2,.cls-3,.cls-6{
+    stroke:#000;
+}
+.cls-8{
+    fill:#e8890c;
+}
+.cls-12{
+    isolation:isolate;
+}
+.cls-9{
+    fill:#f9f7d0;
+}
+.cls-3{
+    fill:#a5a0a4;
+}
+.contour{
+    fill:none;
+}
+.cls-4{
+    mix-blend-mode:multiply;
+}
+.cls-11{
+    fill:#eaac1d;
+}
+.cls-5{
+    fill:#f1ab4e;
+    stroke:#b27a36;
+}
+.cls-6{
+    fill:#ddd9dc;
+}
+
+#orangeJuice:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
+}

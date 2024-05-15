@@ -1,0 +1,108 @@
+#machine-drinks, svg{
+    width: 250px;
+    height: 250px;
+}
+
+svg{
+    margin-top: 2em;
+}
+
+#objet-verre{
+    visibility: hidden;
+}
+
+.active-verre{
+    visibility: visible !important;
+}
+
+.ellipse-liquide-coca{
+    fill: #873C25;
+}
+
+.liquide-coca{
+    fill:#702415;
+}
+
+.ellipse-liquide-orange{
+    fill: #EAAC1D;
+}
+
+.liquide-orange{
+    fill:#E8890C;
+}
+
+
+.cls-1 {
+fill: #efddce;
+}
+
+.cls-1, .cls-2, .cls-3, .cls-5, .cls-7, .cls-8, .cls-9 {
+stroke: #1d1d1b;
+}
+
+.cls-2 {
+fill: #585f61;
+}
+
+.cls-11 {
+fill: #f6db68;
+}
+
+.cls-12 {
+fill: #f9f7d0;
+}
+
+.cls-3 {
+fill: #273e42;
+}
+
+.cls-5 {
+fill: #f7f8e2;
+}
+
+.cls-6 {
+fill: #e51f2c;
+}
+
+.cls-6, .cls-10 {
+stroke: #b27a36;
+stroke-width: .2px;
+}
+
+.cls-7 {
+fill: #f5adb1;
+}
+
+.cls-8 {
+fill: #fff;
+}
+
+.cls-9 {
+fill: #bcbcbb;
+}
+
+.cls-13 {
+fill: #fdfdfd;
+}
+
+.cls-10 {
+fill: #f1ab4e;
+}
+
+#bouton-coca:hover{
+    cursor: pointer;
+    .cls-7{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+       
+    }
+} 
+
+#bouton-orange:hover{
+    cursor: pointer;
+    .cls-5{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+       
+    }
+} 
