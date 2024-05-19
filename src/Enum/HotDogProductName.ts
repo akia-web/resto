@@ -1,5 +1,5 @@
 export enum HotDogProductName{
-    JUS_ORANGE=`jus d'orange`,
+    JUS_ORANGE=`orange`,
     COCA = 'coca',
     COOKIE = 'cookie',
     GLACE = 'glace',

@@ -1,0 +1,16 @@
+.cls-1{fill:#09090a;}
+.contour{fill:none;}
+.cls-3{fill:#6e9da9;}
+.cls-5{fill:#c74822;stroke:#312016;stroke-miterlimit:10;stroke-width:.5px;}
+.cls-4{fill:#0f262e;}
+
+#plat-saucisses{
+    width: 200px; 
+}
+
+#plat-saucisses:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
+}

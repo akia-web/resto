@@ -1,6 +1,13 @@
-.cls-1{fill:#472b2b;}.cls-1,.cls-2,.cls-3,.cls-4,.cls-5{stroke-miterlimit:10;}.cls-1,.cls-2,.cls-4,.cls-5{stroke:#000;}.cls-2{fill:none;}.cls-6{fill:#d48328;stroke-width:0px;}.cls-3{fill:#d89330;stroke:#944c32;}.cls-4{fill:#d38a58;}.cls-5{fill:#e2a569;}
+.cls-1{fill:url(#Dégradé_sans_nom_346-4);}.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7{stroke:#d16f2a;}.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8{stroke-miterlimit:10;stroke-width:.25px;}.cls-9{fill:#e68a3b;}.cls-2{fill:url(#Dégradé_sans_nom_346);}.cls-10{fill:#41150e;}.contour{fill:none;}.cls-3{fill:url(#Dégradé_sans_nom_346-7);}.cls-4{fill:url(#Dégradé_sans_nom_346-3);}.cls-5{fill:url(#Dégradé_sans_nom_346-6);}.cls-12{fill:#8a3816;}.cls-13{fill:#591e0e;}.cls-6{fill:url(#Dégradé_sans_nom_346-8);}.cls-7{fill:url(#Dégradé_sans_nom_346-2);}.cls-8{fill:url(#Dégradé_sans_nom_346-5);stroke:#591e0e;}
 
 #pain{
     width: 180px;
     margin-left: 20px;
+}
+
+#pain:hover{
+    .contour{
+        stroke: lightgreen !important;
+        stroke-width: 10px;
+    }
 }

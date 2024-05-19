@@ -41,15 +41,39 @@
     height: calc(70vh - 1em  - 49vh);
 }
 
+.etagere{
+    height: 10px;
+    background-color: #8b6247;
+}
+
 .container-trash{
     height: calc(100% - 1em);
     margin-top: 1em;
     background-color: #492d1b;
     width: 15%;
     margin-left: 20px;
+
+    .top{
+        background-color:#0C423C ; 
+        height: 60%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+
+        p{
+            color: white;
+            font-weight: bold;
+            font-size: 30px;
+        }
+    }
+
+    .bottom{
+        background-color:#B7DEDA ; 
+        height: 40%; 
+    }
 }
 
-.container-ice-cream{
+.bottom-right{
     height: calc(100% - 1em);
     margin-top: 1em;
     margin-left: 40px;
