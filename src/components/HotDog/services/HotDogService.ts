@@ -1,11 +1,14 @@
 import { EnumPoele } from "../../../Enum/EnumPoele"
+import { HotDogProductName } from "../../../Enum/HotDogProductName"
+import { Plate } from "../../../models/plate"
+import { Poele } from "../../../models/poele"
 
-export const updateVisibilityPoele = (poeleNumber: number, step: EnumPoele) =>{
+export const updateVisibilityPoele = (poeleNumber: number, step: EnumPoele | null) =>{
     const poele = document.querySelectorAll('#poele-container')[poeleNumber]
     const saucisse = document.querySelectorAll('#saucisse-poele')[poeleNumber]
     const saucisseCuite = document.querySelectorAll('#saucisse-cuite')[poeleNumber]
     const saucisseCouleur : NodeListOf<HTMLElement> = poele.querySelectorAll('.cls-3')
-
+    
     switch(step){
         case EnumPoele.VIDE:
             saucisse.classList.add('no-visible')
@@ -57,10 +60,14 @@ export const updateFries = () => {
 }
 
 export const setActive = (id: string, index: null| number = null) => {
+    if(id === 'frites' && index){
+        index -=1
+    }
+
     removeActive()
     if(index){
         const article = document.querySelectorAll('#'+id);
-        article[index-1].classList.add('active-food')
+        article[index].classList.add('active-food')
 
 
     }else{
@@ -78,5 +85,31 @@ export const removeActive = () => {
     });
 }
 
+
+export const inMyHandIsDishes = (hand: Plate |HotDogProductName | null | Poele ) =>{
+
+    if ((hand && typeof hand === 'object') && ('main' in hand || 'step' in hand)){
+        return  true
+    }else{
+        return false
+    }
+ 
+}
+
+
+export const removeDishesInPlate = (index: number) => {
+    if(index>=0){
+        const pain = document.querySelectorAll('#assiette-pain')[index]
+        const hotDog =  document.querySelectorAll('#assiette-saucisse')[index]
+        const saucisse = document.querySelectorAll('#assiette-saucisse-no-pain')[index]
+        const sauce =  document.querySelectorAll('#assiette-sauce')[index]
+        pain.classList.add('no-visible');
+        hotDog.classList.add('no-visible');
+        saucisse.classList.add('no-visible')
+        sauce.classList.add('no-visible');
+    }
+
+
+}
 
 

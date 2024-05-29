@@ -1,3 +1,4 @@
+import { HotDogProductName } from "../../../Enum/HotDogProductName";
 import { LevelType } from "../../../Enum/LevelType";
 import {Product, ProductWithQuantity } from "../../../models/products";
 import { allDishesHotDog, allDrinksHotDog, allSnacksHotDog } from "../../HotDog/Config/allPlats";
@@ -24,25 +25,30 @@ export const getNewOrder = (niveau: LevelType, level: number): ProductWithQuanti
             const randomOrder = getRandomNumber(0, plats.length-1)
             let item : ProductWithQuantity = {
                 ...plats[randomOrder],
-                quantity:1
+                price: getPriceForItem(plats[randomOrder]),
+                quantity:1,
             }
             products.push(item);
 
         }else if(randomNumber >= 35 && randomNumber <66){
             // boisson 
             const boissons = allDrinksHotDog;
+            const randomBoisson = getRandomNumber(0, boissons.length-1)
             let item : ProductWithQuantity = {
-                ...boissons[getRandomNumber(0, boissons.length-1)],
-                quantity:1
+                ...boissons[randomBoisson],
+                price: getPriceForItem(boissons[randomBoisson]),
+                quantity:1,
             }
             products.push(item);
 
         }else{
             //snack
             const snacks = allSnacksHotDog;
+            const randomSnack = getRandomNumber(0, snacks.length-1);
             let item : ProductWithQuantity = {
-                ...snacks[getRandomNumber(0, snacks.length-1)],
-                quantity:1
+                ...snacks[randomSnack],
+                quantity:1,
+                price: getPriceForItem(snacks[randomSnack])
             }
             products.push(item);
         }
@@ -54,6 +60,25 @@ export const getNewOrder = (niveau: LevelType, level: number): ProductWithQuanti
 
 export const getRandomNumber = (min: number, max: number) :number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const getPriceForItem = (plat : Product) => {
+    switch(plat.labelName){
+        case HotDogProductName.COCA:
+        case HotDogProductName.JUS_ORANGE:
+            return 2;
+        case HotDogProductName.COOKIE:
+            return 3
+        case HotDogProductName.SAUSAGE:
+            return 5
+        
+        case HotDogProductName.HOT_DOG:
+            return 7
+        default:
+            return 0
+
+    }
+
 }
 
 const getListPlats = (level:number) : Product[]=> {

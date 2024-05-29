@@ -14,5 +14,6 @@ export interface Product {
 }
 
 export interface ProductWithQuantity extends Product{
-    quantity: number
+    quantity: number;
+    price: number;
 }

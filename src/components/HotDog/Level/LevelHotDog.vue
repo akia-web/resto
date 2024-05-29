@@ -4,12 +4,16 @@
         <div class="header-level">
             <p class="mb-1em text-center"> Niveau 1</p>
             <Timer></Timer>
+            <p>Argent : {{ money }}</p>
         </div>
 
 
         <div class="orders">
             <div class="order" v-for="(order, index) in orders" :key="index"
             @click="selectedOrder=index; deleveryOrder()" >
+                    <div class="flex">
+                        <p v-for="index2 in order.love" :key="index2">♥</p>
+                    </div>
                 <div v-for="(item, index2) in order.products" :key="index2">
                     <p>{{ item.name }} x {{ item.quantity }}</p>
                 </div>
@@ -41,11 +45,11 @@
                 </div>
                 <div class="assietes" style="width: 16%; display: flex; height: 100%; align-items: flex-end; flex-direction: column;">
                     <Assiette v-for="(assiete, index) in assietes" :key="index" 
-                    class="" @click="setInMyHand(assiete.step,index)"></Assiette>
+                    class="" @click="preparePlate(assiete)"></Assiette>
                 </div>
                 <div class="plaque" style="width: 32%; display: flex;">
                     <Plaque v-for="(poele, index) in poeles" :key="index"
-                    @click="setInMyHand(poele.step,index, poele)"></Plaque>
+                    @click="preparePlate(undefined, poele)"></Plaque>
                 </div>
 
                 <div class="frites" style="width: 16%;">
@@ -62,12 +66,12 @@
 
                 </div>
                 <div style="width: 16%; ">
-                    <Friteuse @click="cook(HotDogProductName.FRITES)"></Friteuse>
+                    <Friteuse @click="cookingSideDishes(HotDogProductName.FRITES)"></Friteuse>
                 </div>
                 
             </div>
             <div class="bottom-kitchen flex align-center">
-                <div class="container-trash" @click="putTrash(inMyHand, activeAssiette)">
+                <div class="container-trash" @click="putTrash()">
                     <div class="top" style="">
                         <p>Poubelle</p>
                     </div>
@@ -88,7 +92,7 @@
 </template>
   
   <script setup lang="ts">
-    import { ref, onMounted} from 'vue'
+    import { ref, onMounted, reactive, watch} from 'vue'
     import Timer from '../../shared/Timer/Timer.vue'
     import { Orders } from '../../../models/orders';
     import { getNewOrder } from '../../../components/shared/functions/defineOrders';
@@ -97,7 +101,8 @@
     import { LevelType } from '../../../Enum/LevelType';
     import { HotDogProductName } from '../../../Enum/HotDogProductName';
     import {EnumPoele} from '../../../Enum/EnumPoele'
-    import {updateVisibilityPoele, updateFries, updateDrinks, setActive, removeActive } from '../services/HotDogService'
+    import {Plate} from '../../../models/plate';
+    import {updateVisibilityPoele, updateFries, updateDrinks, setActive, removeActive, inMyHandIsDishes, removeDishesInPlate } from '../services/HotDogService'
     import MachineDrinks from '../Equipements/machine-drinks/MachineDrinks.vue'
     import OrangeJuice from '../food/orangeJuice/OrangeJuice.vue'
     import Coca from '../food/Coca/Coca.vue'
@@ -109,30 +114,41 @@
     import Plaque from '../Equipements/plaques/plaques.vue'
     import PlatSaucisse from '../food/PlatSaucisses/PlatSaucisses.vue'
 
+    const money = ref<number>(0);
+    const idOrder = ref<number>(1)
     const haveOrange = ref<boolean>(false);
     const haveCoca = ref<boolean>(false);
     const haveFries = ref<number>(0);
     const selectedOrder = ref<number>(-1);
-    const inMyHand = ref<HotDogProductName | null>(null);
+    const inMyHand = ref<HotDogProductName | null | Poele | Plate>(null);
     const machineDrinksIsInUse = ref<boolean>(false);
     const machineFriesIsInUse = ref<boolean>(false);
-    const assietes = ref<{step:typeAssiete}[]>([{step:'vide'},{step:'vide'}])
-    const activeAssiette= ref<number|null>(null)
-    const activePoele= ref<number|null>(null)
-    const poeles = ref<Poele[]>([
-        {step:EnumPoele.VIDE, interval:undefined},
-        {step: EnumPoele.VIDE,  interval:undefined}
+    const assietes = reactive<Plate[]>(
+        [
+            { 
+                active: false,
+                main: false,
+                accompanying: false,
+                trim: false
+            },
+            { 
+                active: false,
+                main: false,
+                accompanying: false,
+                trim: false
+            },
+        ]
+    )
+        
+    const poeles = reactive<Poele[]>([
+        {step:EnumPoele.VIDE, interval:undefined, active:false},
+        {step: EnumPoele.VIDE,  interval:undefined, active:false}
     ])
-    const selectedSaussage = ref<EnumPoele | null>()
 
-    type typeAssiete = null| 'vide' | HotDogProductName.PAIN_ASSIETTE | 
-    HotDogProductName.HOT_DOG | HotDogProductName.HOT_DOG_KETCHUP| HotDogProductName.HOT_DOG_MAYONNAISE | HotDogProductName.HOT_DOG_MUSTARD
-    | HotDogProductName.SAUSAGE | HotDogProductName.SAUSAGE_KETCHUP | HotDogProductName.SAUSAGE_MAYONNAISE | HotDogProductName.SAUSAGE_MUSTARD
     type typeDrinks = HotDogProductName.JUS_ORANGE | HotDogProductName.COCA
-    const orders = ref<Orders[]>([
-    ])
+    let orders = reactive<Orders[]>([])
 
-    const cook = (getAction:HotDogProductName) :void => {
+    const cookingSideDishes = (getAction:HotDogProductName) :void => {
         
         switch(getAction){
             case HotDogProductName.JUS_ORANGE:
@@ -157,9 +173,21 @@
     const deleveryOrder = () => {
         
         if(inMyHand.value && selectedOrder.value>=0){
-            const updatedProducts: ProductWithQuantity[] = orders.value[selectedOrder.value].products.filter((product: ProductWithQuantity) => {
+            const updatedProducts: ProductWithQuantity[] = orders[selectedOrder.value].products.filter((product: ProductWithQuantity) => {
+                let item : any;
 
-                if (product.labelName === inMyHand.value) {
+                if(typeof inMyHand.value ==='object' &&  'main' in inMyHand.value!){
+                    if(inMyHand.value.main && !inMyHand.value.accompanying){
+                        item = HotDogProductName.SAUSAGE
+                    }else if(inMyHand.value.main && inMyHand.value.accompanying){
+                        item = HotDogProductName.HOT_DOG
+                    }
+                  
+                }else{
+                    item = inMyHand.value
+                }
+
+                if (product.labelName === item) {
                     const active = document.querySelectorAll('.active-food')
                         active.forEach(element => {
                             element.classList.remove('active-food')
@@ -180,17 +208,33 @@
                         haveFries.value -= 1;
                         break
                     }
+
+                    if(inMyHandIsDishes(inMyHand.value)){
+                        const assieteActive: number = assietes.findIndex((assiete: Plate)=> assiete.active === true)
+                        assietes[assieteActive].main = false;
+                        assietes[assieteActive].accompanying = false;
+                        assietes[assieteActive].trim = false;
+                        assietes[assieteActive].active = false;
+                        removeDishesInPlate(assieteActive)
+                      
+                    }
+
                     inMyHand.value = null;
-                    return product.quantity > 0 ? true : false
+                    const deleteOrder =  product.quantity > 0 ? true : false
+
+                    if(!deleteOrder){
+                        money.value += product.price
+                    }
+                    return deleteOrder
                 }else{
                     return true
                 }
 
                 });
 
-            orders.value[selectedOrder.value].products = updatedProducts;
-            if(orders.value[selectedOrder.value].products.length === 0){
-                orders.value.splice(selectedOrder.value,1)
+            orders[selectedOrder.value].products = updatedProducts;
+            if(orders[selectedOrder.value].products.length === 0){
+                orders.splice(selectedOrder.value,1)
             }
 
         }
@@ -198,7 +242,7 @@
     }
 
     const handleMachine = (e: HotDogProductName) => {
-       cook(e)
+       cookingSideDishes(e)
     }
 
     const makeDrinks = (type : typeDrinks, time: number) => {
@@ -216,34 +260,24 @@
 
 
     const addPain = () => {
-        for (let i = 0; i < assietes.value.length; i++) {
-            let pain = assietes.value[i];
+        for (let i = 0; i < assietes.length; i++) {
+            let assiete = assietes[i];
 
-            if(pain.step === 'vide'){
-                pain.step = HotDogProductName.PAIN_ASSIETTE
-                updateVisibilityAssiete(i, pain.step)
+            if(!assiete.accompanying){
+                assiete.accompanying = true
+                updateVisibilityAssiete(assiete)
                 break
             }
            
         }
-
-        // if(stepAssiete1.value === 'vide'){
-        //     stepAssiete1.value = HotDogProductName.PAIN_ASSIETTE
-        //     updateVisibilityAssiete(0, stepAssiete1.value)
-        //     return
-        // }else if(stepAssiete2.value === 'vide'){
-        //     stepAssiete2.value = HotDogProductName.PAIN_ASSIETTE
-        //     updateVisibilityAssiete(1, stepAssiete1.value)
-        // }
     }
 
     const addSausages = () => {
 
-        for (let i = 0; i < poeles.value.length; i++) {
-        const poele = poeles.value[i];
+        for (let i = 0; i < poeles.length; i++) {
+        const poele = poeles[i];
         if (poele.step === EnumPoele.VIDE) {
             cookSausages(poele, i, 3000);
-            console.log('lala');
             break;
         }
     }
@@ -253,116 +287,185 @@
         poele.step = EnumPoele.CRU
 
         updateVisibilityPoele(index, poele.step)
-            setInterval(()=>{
-             poele.step = EnumPoele.CUITE
-
+        poele.interval = setInterval(()=>{
+            poele.step = EnumPoele.CUITE
+            updateVisibilityPoele(index, poele.step)
+            clearInterval(poele.interval)
+            poele.interval = setInterval(()=>{
+                poele.step = EnumPoele.CRAMEE
                 updateVisibilityPoele(index, poele.step)
-                poele.interval = setInterval(()=>{
-                    poele.step = EnumPoele.CRAMEE
-                    updateVisibilityPoele(index, poele.step)
-                },secondes *2)
-            },secondes)
+            },secondes *2)
+        },secondes)
 
     }
 
-    const updateVisibilityAssiete = (numberAssiete: number, step: typeAssiete) =>{
-        switch(step){
-            case HotDogProductName.PAIN_ASSIETTE:
-                const pain = document.querySelectorAll('#assiette-pain')[numberAssiete]
-                pain.classList.remove('no-visible');
-                break
-            case HotDogProductName.HOT_DOG:
-                const assiette = document.querySelectorAll('#assiette-saucisse')[numberAssiete!]
-                assiette.classList.remove('no-visible')
-            
+    const updateVisibilityAssiete = (assiete : Plate) =>{
+        const numberAssiete =  assietes.findIndex((item : Plate) => item === assiete)
+        const pain = document.querySelectorAll('#assiette-pain')[numberAssiete]
+        const assiette = document.querySelectorAll('#assiette-saucisse')[numberAssiete!]
+        const sausage = document.querySelectorAll('#assiette-saucisse-no-pain')[numberAssiete!]
+
+        if(!assiete.main && !assiete.accompanying && !assiete.trim){
+            pain.classList.add('no-visible')
+            assiette.classList.add('no-visible')
+            sausage.classList.add('no-visible')
+        }
+
+        if(assiete.main && !assiete.accompanying){
+            sausage.classList.remove('no-visible') 
+        }
+
+        if(assiete.main && assiete.accompanying){
+            sausage.classList.add('no-visible')
+            assiette.classList.remove('no-visible')
+        }
+
+        if(assiete.accompanying){
+            pain.classList.remove('no-visible')
         }
     }
 
-    
+    const preparePlate = (plate? : Plate, poele?:Poele) =>{
 
-
-    const setInMyHand = (object : typeAssiete | EnumPoele, activeAssieteOrPoele: number|null, poele?: Poele) => {
         if(poele){
-            object = poele.step
-        }
-        if(object !== null || object !== 'vide' ){
-            switch(object){
-                case HotDogProductName.PAIN_ASSIETTE:
-                    console.log('pain')
-                    inMyHand.value = HotDogProductName.PAIN_ASSIETTE;
-                    if(selectedSaussage.value && selectedSaussage.value === EnumPoele.CUITE){
-                        inMyHand.value = HotDogProductName.HOT_DOG;
-                        updateVisibilityAssiete(activeAssieteOrPoele!, inMyHand.value)
-                        clearInterval(poeles.value[activePoele.value!].interval)
-                        
-                        console.log(activePoele.value )
-                        if(activePoele.value !== null){
-                            console.log('je vais me faire update')
-                            poeles.value[activePoele.value].step = EnumPoele.VIDE
-                            poeles.value[activePoele.value]={step: EnumPoele.VIDE, interval: clearInterval(poeles.value[activePoele.value].interval)}
-                            console.log(poeles.value)
-                            // console.log(poeles.value[activePoele.value])
-                            // updateVisibilityPoele(activePoele.value, poeles.value[activePoele.value].step!)
-                            // activePoele.value = null;
-                        }
-                      
-                    }
-                    activeAssiette.value = activeAssieteOrPoele;
-                    setActive('assiette-container', activeAssieteOrPoele!+1)
-                    break
-                
-                case EnumPoele.CUITE:
-                    selectedSaussage.value = poele?.step
-                    activePoele.value = activeAssieteOrPoele;
-                    console.log(activePoele.value)
-                    setActive('allSaucisse', activeAssieteOrPoele!+1)
+            setAllPoelesInactives();
+            poele.active = true
+            const indexActivePoele = poeles.findIndex((item : Poele) => item === poele)
+
+            if(poele.step === EnumPoele.CUITE){
+                setActive('allSaucisse',indexActivePoele)
+            }
+
+            if(poele.step === EnumPoele.CRAMEE){
+                inMyHand.value = poele
+                clearInterval(poeles[indexActivePoele].interval) 
+                setActive('allSaucisse',indexActivePoele)
             }
         }
-    }
 
-
-
-    const putTrash = (hand:  HotDogProductName | null, index: number|null) =>{
-        if(
-            (hand === HotDogProductName.PAIN_ASSIETTE || hand === HotDogProductName.SAUCISSE_POELE) 
-            && index !== null){
-
-                switch(hand){
-                    case HotDogProductName.PAIN_ASSIETTE || HotDogProductName.HOT_DOG || HotDogProductName.HOT_DOG_KETCHUP
-                    ||HotDogProductName.HOT_DOG_MAYONNAISE || HotDogProductName.HOT_DOG_MUSTARD:
-                        const pain = document.querySelectorAll('#assiette-pain')[index]
-                        const saucisse =  document.querySelectorAll('#assiette-saucisse')[index]
-                        const sauce =  document.querySelectorAll('#assiette-sauce')[index]
-                        pain.classList.add('no-visible');
-                        saucisse.classList.add('no-visible');
-                        sauce.classList.add('no-visible');
-                        removeActive()
-                        stepAssiete1.value = index === 0? 'vide' : stepAssiete1.value
-                        stepAssiete2.value = index === 1? 'vide' : stepAssiete2.value
-                        break
-                }
-             
-                inMyHand.value = null;
-                activeAssiette.value = null;
-            }
+        const indexActivePoele:number = poeles.findIndex((item : Poele) => item.active === true)
+       
+        if(plate){
             
+            setAllPlateInactive();
+            plate.active = true;
+            const indexActivePlate = getActivePlateIndex()
 
+             //si saucisse cuite active
+            if(indexActivePoele > -1  && poeles[indexActivePoele].step === EnumPoele.CUITE){
+                clearInterval(poeles[indexActivePoele].interval);
+                plate.main = true;
+                poeles[indexActivePoele].active = false;
+                poeles[indexActivePoele].step = EnumPoele.VIDE
+                updateVisibilityPoele(indexActivePoele, poeles[indexActivePoele].step);
+                updateVisibilityAssiete(plate);
+            }
+
+            //si saucisse cramée active mais clic sur une assiete de pain
+            if(indexActivePoele > -1  && poeles[indexActivePoele].step === EnumPoele.CRAMEE && plate.accompanying){
+                inMyHand.value = plate;
+                setActive('assiette-container', indexActivePlate)
+            }
+
+            // Si pas de poeles actives et assiete selectionnée
+            if(indexActivePoele === -1){
+                inMyHand.value = plate;
+                setActive('assiette-container', indexActivePlate)
+            }
+        }
+    }
+
+    const putTrash = () =>{
+        if( inMyHand.value && inMyHandIsDishes(inMyHand.value)){
+            if(typeof inMyHand.value ==='object' &&  'main' in inMyHand.value){
+                const activePlate: number = getActivePlateIndex()
+                removeDishesInPlate(activePlate)
+                assietes[activePlate].accompanying = false;
+                assietes[activePlate].main = false;
+                assietes[activePlate].trim = false;
+                assietes[activePlate].active = false;
+            }else{
+                const activePoele:number = getActivePoeleIndex();
+                console.log(activePoele)
+                poeles[activePoele].step = EnumPoele.VIDE
+                updateVisibilityPoele(activePoele, poeles[activePoele].step);
+                poeles[activePoele].active = false;
+               
+            }
+         
+            removeActive()
+           
+            inMyHand.value = null;  
+        }
+    
+    }
+
+   const setAllPlateInactive = () =>{
+    assietes.map((element: Plate) =>{
+        element.active = false;
+    })
+   }
+
+   const getActivePlateIndex = () :number =>{
+       return assietes.findIndex((item:Plate)=> item.active === true)
+   }
+
+   const getActivePoeleIndex = () :number =>{
+       return poeles.findIndex((item:Poele)=> item.active === true)
+   }
+
+   const setAllPoelesInactives = () => {
+    poeles.map((element: Poele) =>{
+        element.active = false;
+    })
+   }
+
+   const createOrder = () => {
+   
+       const timeOut =  setTimeout(() => {
+            const order = {
+                status: false,
+                products: getNewOrder(LevelType.NORMAL, 1),
+                love: 5,
+                interval: 0,
+                id: idOrder.value
+            }
+            if(orders.length < 4){
+                orders.push(order)
+                idOrder.value += 1;
+                const indexOrder = orders.findIndex((element: Orders)=> element.id=== order.id)
+                setOrderInterval(orders[indexOrder]) 
+                clearTimeout(timeOut)   
+            }                 
+        }, 2000)  
 
     }
-    onMounted(() => {
-     const interval = setInterval(() => {
-        if(orders.value.length <4){
-            orders.value.push({
-            status: false,
-            products: getNewOrder(LevelType.NORMAL, 1)
-        })
-        }else{
-            clearInterval(interval)
-        }
+    
+    const setOrderInterval = (order: Orders) => {
+        order.interval =  setInterval(() => {
+            if(order.love){
+                order.love -= 1
+                if(order.love === 0){
+                    // clearInterval(order.interval)
+                    orders = orders.filter(item => item !== order);                   
+                }
+            }
+        }, 20000)
+    } 
 
-    }, 4000);
+    onMounted(() => {
+        createOrder()
+         
     })
 
+    watch(orders, () => {
+        let truc = false
+        if(orders.length < 4 && !truc){
+            truc = true
+            createOrder() 
+            truc = false
+        }
+    })
  
     
 
