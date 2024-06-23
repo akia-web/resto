@@ -11,9 +11,5 @@ export interface Product {
     haveCondiment: boolean;
     condiment?: CondimentHotDog;
     labelName: HotDogProductName;
-}
-
-export interface ProductWithQuantity extends Product{
-    quantity: number;
-    price: number;
+    price?: number;
 }

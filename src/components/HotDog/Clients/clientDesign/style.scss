@@ -1,0 +1,28 @@
+.cls-1{stroke-width:0px;}.cls-1,.cls-2{fill:#70370f;}.cls-2,.cls-3{stroke:#000;}.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8,.cls-9,.cls-10{stroke-miterlimit:10;}.cls-3,.cls-8{fill:none;}.cls-4{fill:#dfb5d6;}.cls-4,.cls-5,.cls-6,.cls-7,.cls-8,.cls-9,.cls-10{stroke:#1d1d1b;}.cls-5{fill:#fff;}.cls-6{fill:#efe0c7;}.cls-7{fill:#000;}.cls-9{fill:#d11852;}.cls-10{fill:#7eb7e4;}
+
+.client{
+    height: 27vh;
+    animation: appared 2s;
+}
+
+.no-visible{
+    visibility: hidden;
+}
+
+@keyframes stay {
+    0%, 100% {
+        transform: translate(0,40px);
+      }
+      50% {
+        transform: translate(0, 27px);
+      }
+  }
+
+  @keyframes appared {
+    0% {
+        opacity: 0;
+      }
+    100%{
+        opacity: 1;
+    }
+  }

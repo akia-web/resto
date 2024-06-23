@@ -1,6 +1,6 @@
 
 <template>
-    <div class="height-100vh pt-1em">
+    <div class="height-100vh">
         <div class="header-level">
             <p class="mb-1em text-center"> Niveau 1</p>
             <Timer></Timer>
@@ -8,40 +8,24 @@
         </div>
 
 
-        <div class="orders">
-            <div class="order" v-for="(order, index) in orders" :key="index"
-            @click="selectedOrder=index; deleveryOrder()" >
-                    <div class="flex">
-                        <p v-for="index2 in order.love" :key="index2">♥</p>
-                    </div>
-                <div v-for="(item, index2) in order.products" :key="index2">
-                    <p>{{ item.name }} x {{ item.quantity }}</p>
-                </div>
-            </div>
-        </div>
+        <ListClient></ListClient>
 
-        <div class="kitchen">
-
-            <div class="top-kitchen flex">
-                <MachineDrinks @message="handleMachine($event)"></MachineDrinks>
-   
-            </div>
-            <div class="bord-kitchen"></div>
+        <div class="kitchen">            
             <div class="plan-kitchen flex justify-space-between">
-                <div class="pain" style="width: 16%; display: flex; justify-content: center;">
-                    <div class="mr-1em" style="width: 50px;">
+                <div style="width: 20%; background-color: red;">
+                    <MachineDrinks @message="handleMachine($event)" style="margin-top: -250px;"></MachineDrinks>
+                    <div class="flex width-100 justify-center" style="background-color: blueviolet">
                         <OrangeJuice v-if="haveOrange" 
-                        class="pointer"
+                        class="pointer mr-1em"
                         @click="inMyHand = HotDogProductName.JUS_ORANGE ; setActive('orangeJuice')" 
                         ></OrangeJuice>
-                    </div>
 
-                    <div style="width: 50px;">
                         <Coca v-if="haveCoca" 
                         @click="inMyHand = HotDogProductName.COCA ; setActive('coca')"
                         class="align-self-end pointer" 
                         ></Coca>
                     </div>
+                    
                 </div>
                 <div class="assietes" style="width: 16%; display: flex; height: 100%; align-items: flex-end; flex-direction: column;">
                     <Assiette v-for="(assiete, index) in assietes" :key="index" 
@@ -95,10 +79,8 @@
     import { ref, onMounted, reactive, watch} from 'vue'
     import Timer from '../../shared/Timer/Timer.vue'
     import { Orders } from '../../../models/orders';
-    import { getNewOrder } from '../../../components/shared/functions/defineOrders';
     import { ProductWithQuantity } from '../../../models/products';
     import {Poele} from '../../../models/poele';
-    import { LevelType } from '../../../Enum/LevelType';
     import { HotDogProductName } from '../../../Enum/HotDogProductName';
     import {EnumPoele} from '../../../Enum/EnumPoele'
     import {Plate} from '../../../models/plate';
@@ -113,6 +95,9 @@
     import Assiette from '../food/assiette/Assiette.vue';
     import Plaque from '../Equipements/plaques/plaques.vue'
     import PlatSaucisse from '../food/PlatSaucisses/PlatSaucisses.vue'
+    import {ClientResto} from '../../../models/clientResto';
+
+    import ListClient from '../Clients/listClient/listClient.vue';
 
     const money = ref<number>(0);
     const idOrder = ref<number>(1)
@@ -224,6 +209,7 @@
 
                     if(!deleteOrder){
                         money.value += product.price
+                        createOrder()
                     }
                     return deleteOrder
                 }else{
@@ -234,6 +220,7 @@
 
             orders[selectedOrder.value].products = updatedProducts;
             if(orders[selectedOrder.value].products.length === 0){
+                clearTimeout(orders[selectedOrder.value].interval)
                 orders.splice(selectedOrder.value,1)
             }
 
@@ -287,11 +274,11 @@
         poele.step = EnumPoele.CRU
 
         updateVisibilityPoele(index, poele.step)
-        poele.interval = setInterval(()=>{
+        poele.interval = setTimeout(()=>{
             poele.step = EnumPoele.CUITE
             updateVisibilityPoele(index, poele.step)
-            clearInterval(poele.interval)
-            poele.interval = setInterval(()=>{
+            clearTimeout(poele.interval)
+            poele.interval = setTimeout(()=>{
                 poele.step = EnumPoele.CRAMEE
                 updateVisibilityPoele(index, poele.step)
             },secondes *2)
@@ -338,7 +325,7 @@
 
             if(poele.step === EnumPoele.CRAMEE){
                 inMyHand.value = poele
-                clearInterval(poeles[indexActivePoele].interval) 
+                clearTimeout(poeles[indexActivePoele].interval) 
                 setActive('allSaucisse',indexActivePoele)
             }
         }
@@ -353,7 +340,7 @@
 
              //si saucisse cuite active
             if(indexActivePoele > -1  && poeles[indexActivePoele].step === EnumPoele.CUITE){
-                clearInterval(poeles[indexActivePoele].interval);
+                clearTimeout(poeles[indexActivePoele].interval);
                 plate.main = true;
                 poeles[indexActivePoele].active = false;
                 poeles[indexActivePoele].step = EnumPoele.VIDE
@@ -419,55 +406,7 @@
         element.active = false;
     })
    }
-
-   const createOrder = () => {
-   
-       const timeOut =  setTimeout(() => {
-            const order = {
-                status: false,
-                products: getNewOrder(LevelType.NORMAL, 1),
-                love: 5,
-                interval: 0,
-                id: idOrder.value
-            }
-            if(orders.length < 4){
-                orders.push(order)
-                idOrder.value += 1;
-                const indexOrder = orders.findIndex((element: Orders)=> element.id=== order.id)
-                setOrderInterval(orders[indexOrder]) 
-                clearTimeout(timeOut)   
-            }                 
-        }, 2000)  
-
-    }
-    
-    const setOrderInterval = (order: Orders) => {
-        order.interval =  setInterval(() => {
-            if(order.love){
-                order.love -= 1
-                if(order.love === 0){
-                    // clearInterval(order.interval)
-                    orders = orders.filter(item => item !== order);                   
-                }
-            }
-        }, 20000)
-    } 
-
-    onMounted(() => {
-        createOrder()
-         
-    })
-
-    watch(orders, () => {
-        let truc = false
-        if(orders.length < 4 && !truc){
-            truc = true
-            createOrder() 
-            truc = false
-        }
-    })
- 
-    
+  
 
   </script>
   
